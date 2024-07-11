@@ -2,8 +2,16 @@ import mysql.connector
 import json
 from dotenv import load_dotenv
 from datetime import datetime
+from send_email import send
 import os
 load_dotenv()
+
+smtp_server = os.getenv('SMTP_SERVER')
+smtp_port = os.getenv('SMTP_PORT')
+sender_email = os.getenv('SENDER_EMAIL')
+sender_name = os.getenv('SENDER_NAME')
+receiver_email = os.getenv('RECEIVER_EMAIL')
+password = os.getenv('PASSWORD')
 
 mydb = mysql.connector.connect(
   host=os.getenv('DATABASE_URL'),
@@ -44,6 +52,8 @@ def get_next_user():
             Codechef cc ON u.email = cc.user_email
         LEFT JOIN 
             Leetcode lc ON u.email = lc.user_email
+        WHERE
+            cf.codeforces_id IS NOT NULL OR cc.codechef_id IS NOT NULL OR lc.leetcode_id IS NOT NULL
         ORDER BY
             u.lastUpdatedAt
         LIMIT 1;
@@ -195,6 +205,36 @@ def push_rating_changes(email, data, chunk_size=30):
     mycursor.close()
 
 
+def get_top_performers():
+    mycursor = mydb.cursor()
+    mycursor.execute('''
+        SELECT u.first_name, s.user_email AS email, COUNT(s.user_email) AS numsub
+        FROM User u
+        JOIN Submission s ON u.email = s.user_email
+        WHERE CONVERT_TZ(s.submitted_at, '+00:00', '+05:30') >= DATE_FORMAT(CONVERT_TZ(CURDATE(), '+05:30', '+00:00'), '%Y-%m-%d 00:00:00')
+        AND CONVERT_TZ(s.submitted_at, '+00:00', '+05:30') < DATE_FORMAT(CONVERT_TZ(CURDATE() + INTERVAL 1 DAY, '+05:30', '+00:00'), '%Y-%m-%d 00:00:00')
+        GROUP BY u.first_name, s.user_email
+        ORDER BY numsub DESC
+        LIMIT 10;
+                     ''')
+    performers = mycursor.fetchall()
+    performers_list = []
+    for performer in performers: 
+        performer_dict = {
+            "name": performer[0],
+            "email": performer[1],
+            "submissions_count": performer[2]
+        }
+        performers_list.append(performer_dict)
+    performers_list = [
+        {
+            "name": "Prince Sharma",
+            "email": "princesharma2899@gmail.com",
+            "submissions_count": 1
+        }
+    ]
+    return performers_list
+
 
 def main(): 
     # print(json.dumps(get_last_user(), indent=4))
@@ -270,4 +310,10 @@ def main():
     ]
     push_rating_changes('princesharma2899@gmail.com', rating_change_data)
 
-main()
+def test_query():
+    performers = get_top_performers()
+    rank = 1; 
+    for performer in performers:
+        send(performer['name'], performer['email'], performer['submissions_count'], rank)
+
+test_query()

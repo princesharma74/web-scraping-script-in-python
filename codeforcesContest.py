@@ -4,6 +4,8 @@ from datetime import datetime
 
 
 def codeforces_contestHistory(username):
+    if username is None:
+        return []
     rating_change_data = []
     url = f"https://codeforces.com/contests/with/{username}"
     response = requests.get(url, allow_redirects=False)

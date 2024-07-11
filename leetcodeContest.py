@@ -2,6 +2,8 @@ import requests
 from datetime import datetime, timedelta, timezone
 
 def leetcode_contestHistory(username):
+    if username is None:
+        return []
     query = """
     query userContestRankingHistory($username: String!) {
         userContestRankingHistory(username: $username) {

@@ -7,6 +7,8 @@ import re
 
 
 def codechef_contestHistory(driver, username):
+    if username is None:
+        return []
 
     rating_change_data = []
     url = f"https://www.codechef.com/users/{username}"
