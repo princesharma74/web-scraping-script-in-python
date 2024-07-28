@@ -1,1 +1,1 @@
-* * * * * docker compose -f /home/ubuntu/scripts/docker-compose.yml up -d
+* * * * * python3 /app/send_email/sql_helper.py
