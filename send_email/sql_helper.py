@@ -226,13 +226,13 @@ def get_top_performers():
             "submissions_count": performer[2]
         }
         performers_list.append(performer_dict)
-    # performers_list = [
-    #     {
-    #         "name": "Prince Sharma",
-    #         "email": "princesharma2899@gmail.com",
-    #         "submissions_count": 1
-    #     }
-    # ]
+    performers_list = [
+        {
+            "name": "Prince Sharma",
+            "email": "princesharma2899@gmail.com",
+            "submissions_count": 1
+        }
+    ]
     return performers_list
 
 
@@ -323,4 +323,4 @@ def test_query():
     for performer in performers:
         send(performer['name'], performer['email'], performer['submissions_count'], rank)
 
-test_query()
+# test_query()

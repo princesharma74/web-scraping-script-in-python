@@ -1,15 +1,10 @@
-FROM selenium/standalone-chrome:latest
+# FROM selenium/standalone-chrome:latest
+FROM seleniarm/standalone-chromium:latest
 WORKDIR /app
 USER root
-RUN apt-get update && apt-get install -y python3 python3-pip cron
+RUN apt-get update && apt-get install -y python3 python3-pip
 COPY . /app
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
-RUN chmod +x /app/send_email/sql_helper.py
-COPY cron_job.d /etc/cron.d/cron_job
-RUN chmod 0644 /etc/cron.d/cron_job
-RUN touch /var/log/cron.log
-RUN crontab /etc/cron.d/cron_job
-RUN cron
+RUN pip install --no-cache-dir -r requirements.txt --break-system-packages
+# RUN chmod +x /app/send_email/sql_helper.py
 ENV PYTHONUNBUFFERED=1
 ENV PIP_ROOT_USER_ACTION=ignore

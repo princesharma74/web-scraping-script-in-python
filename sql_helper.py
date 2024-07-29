@@ -316,4 +316,4 @@ def test_query():
     for performer in performers:
         send(performer['name'], performer['email'], performer['submissions_count'], rank)
 
-test_query()
+# test_query()

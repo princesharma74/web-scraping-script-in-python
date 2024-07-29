@@ -9,12 +9,7 @@ services:
     restart: always
 
   my_app:
-    build: .
+    image: princesharma2899/clc3.tech:latest
     depends_on:
       - selenium
-    environment:
-      - PYTHONUNBUFFERED=1
-    volumes:
-      - .:/app
-    command: python3 -u main.py >> /home/ubuntu/scripts/output.log 2>&1
     restart: always
